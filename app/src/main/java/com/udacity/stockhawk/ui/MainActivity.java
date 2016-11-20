@@ -27,6 +27,7 @@ import com.udacity.stockhawk.sync.QuoteSyncJob;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
@@ -44,13 +45,15 @@ public class MainActivity extends AppCompatActivity
    SwipeRefreshLayout swipeRefreshLayout;
    private StockAdapter adapter;
 
-   public void button(View view) {
+   @OnClick (R.id.fab)
+   public void onClick() {
       new AddStockDialog().show(getFragmentManager(), "StockDialogFragment");
    }
 
    @Override
    public void onClick(String symbol) {
       Timber.d("Symbol clicked: %s", symbol);
+      StockDetailActivity.start(this, symbol);
    }
 
    @Override
