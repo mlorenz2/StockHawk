@@ -28,7 +28,9 @@ import java.util.Locale;
 public class StockDetailActivity extends AppCompatActivity
       implements LoaderManager.LoaderCallbacks<Cursor> {
 
-   private static final String BUNDLE_STOCK_SYMBOL = "stock.symbol";
+   public static final String BUNDLE_STOCK_SYMBOL = "stock.symbol";
+   private static final String KEY_STOCK_HISTORY = "key.stock.history";
+   String stockHistory;
    private String symbol;
 
    public static void start(Activity activity, String symbol) {
@@ -52,8 +54,9 @@ public class StockDetailActivity extends AppCompatActivity
          }
       }
 
-      String stockHistory = data.getString(Contract.Quote.POSITION_HISTORY);
+      stockHistory = data.getString(Contract.Quote.POSITION_HISTORY);
       initChart(symbol, createHistory(stockHistory));
+      data.close();
    }
 
    @Override
@@ -68,7 +71,18 @@ public class StockDetailActivity extends AppCompatActivity
       symbol = getIntent().getExtras()
             .getString(BUNDLE_STOCK_SYMBOL, "");
 
-      getSupportLoaderManager().initLoader(0, null, this);
+      if (savedInstanceState != null) {
+         stockHistory = savedInstanceState.getString(KEY_STOCK_HISTORY);
+         initChart(symbol, createHistory(stockHistory));
+      } else {
+         getSupportLoaderManager().initLoader(0, null, this);
+      }
+   }
+
+   @Override
+   protected void onSaveInstanceState(Bundle outState) {
+      super.onSaveInstanceState(outState);
+      outState.putString(KEY_STOCK_HISTORY, stockHistory);
    }
 
    private LongSparseArray<Float> createHistory(String stockHistory) {
